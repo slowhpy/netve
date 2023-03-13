@@ -27,7 +27,7 @@ def ARP_Packet(arp):
     # Send ARP packet and check for response
     ans, unans = arping(IP_Range)
     mac = ans[0][1].src
-    packet = Ether(src=mac, dst=broadcastMac)/ARP(pdst=IP_Range)
+    packet = Ether(src=mac, dst=broadcastMac)/ARP(pdst=IP_Range, timeout=2, verbose=False, multi=True)
     ans, unans = srp(packet, timeout=2, iface=interface, inter=0.1)
     arp_list = []
     for send, receive in ans:
@@ -40,7 +40,7 @@ def ARP_Packet(arp):
 def ICMP_Packet(icmp):
     # If no ARP responses were received, try sending an ICMP packet
     try:
-        ans, unans = sr(IP(dst=IP_Range)/ICMP())
+        ans, unans = sr(IP(dst=IP_Range)/ICMP(), timeout=2, verbose=False, multi=True)
         icmp_list=[]
         for send, receive in ans:
             if receive.haslayer(ICMP):
@@ -54,7 +54,7 @@ def ICMP_Packet(icmp):
 def TCP_Packet(tcp):
     # If no ARP or ICMP responses were received, try sending a TCP SYN packet
     try:
-        ans, unans = sr(IP(dst=IP_Range)/TCP(dport=port, flags="S"))
+        ans, unans = sr(IP(dst=IP_Range)/TCP(dport=port, flags="S"), timeout=2, verbose=False, multi=True)
         tcp_list=[]
         for send, receive in ans:
             if receive.haslayer(TCP):
